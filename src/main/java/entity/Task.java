@@ -1,8 +1,5 @@
 package entity;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Task {
     private String name;
     private double price;
