@@ -7,11 +7,8 @@ import entity.Task;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -52,8 +49,9 @@ public class DatabaseImpl implements Database {
                 int priority = Integer.parseInt(String.valueOf(object.get("priority")));
                 boolean done = (boolean) object.get("done");
                 Task task = new Task(name, date, priority, done);
-                if (object.get("price") != null)
+                if (object.get("price") != null) {
                     task.setPrice(Double.parseDouble(String.valueOf(object.get("price"))));
+                }
                 list.add(task);
             } catch (Exception e) { e.printStackTrace(); }
         }
