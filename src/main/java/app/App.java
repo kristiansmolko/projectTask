@@ -5,13 +5,16 @@ import entity.Task;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +24,7 @@ public class App extends Application {
     private String date = format.format(new Date());
     private ListView<String> list = new ListView<>();
     private BorderPane root = new BorderPane();
+    private Alert alert = new Alert(Alert.AlertType.WARNING);
 
     public static void main(String[] args) {
         launch(args);
@@ -33,13 +37,12 @@ public class App extends Application {
         list.setEditable(false);
 
         GridPane buttonPane = new GridPane();
-        buttonPane.setTranslateX(-20);
+        buttonPane.setTranslateX(-10);
         buttonPane.setTranslateY(20);
         buttonPane.setVgap(15);
+
         Button allBtn = allMessages();
         Button newBtn = new Button("New task");
-
-
         newBtn.setMaxHeight(20); newBtn.setMaxWidth(100);
         newBtn.setOnAction(e -> {
             BorderPane root2 = newMessage();
@@ -49,8 +52,17 @@ public class App extends Application {
             stage.showAndWait();
         });
 
+        GridPane priority = new GridPane();
+        priority.setMaxWidth(100);
+        priority.setVgap(10);
+        ComboBox<Integer> choosePriority = priorityBox();
+        Button byBtn = byPriorityMessages(choosePriority);
+        priority.addRow(0, byBtn);
+        priority.addRow(1, choosePriority);
+
         buttonPane.addRow(0, allBtn);
         buttonPane.addRow(1, newBtn);
+        buttonPane.addRow(2, priority);
 
         root.setCenter(list);
         root.setRight(buttonPane);
@@ -66,12 +78,7 @@ public class App extends Application {
         button.setMaxHeight(20); button.setMaxWidth(100);
         button.setOnAction(e2 -> {
             List<Task> listOfAll = dat.getAllTasks();
-            for (Task t: listOfAll){
-                list.getItems().add(t.getDate() + ": \n" + t.getName() + ", Priority: " + t.getPriority() +
-                        (t.getPrice()>0.0?(", Price: " + t.getPrice() + ": "):": ")
-                        + (t.isDone()?"Done":"Not done") + "\n" +
-                        "----------------------------------------------------\n");
-            }
+            addToList(listOfAll);
         });
         return button;
     }
@@ -135,5 +142,32 @@ public class App extends Application {
         root2.setCenter(grid);
         root2.setBottom(create);
         return root2;
+    }
+
+    private Button byPriorityMessages(ComboBox<Integer> priority){
+        Button button = new Button("Priority");
+        button.setMaxWidth(100);
+        button.setMaxHeight(20);
+        button.setOnAction(e -> {
+            if (priority.getValue() == null){
+                alert.setContentText("Choose priority");
+                alert.showAndWait();
+            } else {
+                int priorityValue = priority.getValue();
+                List<Task> listPriority = dat.getTasksByPriority(priorityValue);
+                addToList(listPriority);
+            }
+        });
+        return button;
+    }
+
+    private void addToList(List<Task> taskList){
+        list.getItems().clear();
+        for (Task t: taskList){
+            list.getItems().add(t.getDate() + ": \n" + t.getName() + ", Priority: " + t.getPriority() +
+                    (t.getPrice()>0.0?(", Price: " + t.getPrice() + ": "):": ")
+                    + (t.isDone()?"Done":"Not done") + "\n" +
+                    "----------------------------------------------------\n");
+        }
     }
 }
