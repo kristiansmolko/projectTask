@@ -7,7 +7,7 @@ import java.util.List;
 public interface Database {
     public void insertTask(Task task);
 
-    public void completeTask(int id);
+    public void completeTask(String id);
 
     public List<Task> getAllTasks();
 
@@ -15,7 +15,7 @@ public interface Database {
 
     public List<Task> getTasksByPriority(int priority);
 
-    public List<Task> getTasksByName(String name);
+    public Task getTaskByName(String name);
 
     public void deleteDoneTasks();
 }
