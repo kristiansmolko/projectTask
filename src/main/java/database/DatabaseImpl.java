@@ -18,9 +18,9 @@ import java.util.List;
 
 
 public class DatabaseImpl implements Database {
-    private MongoClient client = new MongoClient();
-    private MongoDatabase database = client.getDatabase("myFirstDb");
-    private MongoCollection<Document> collection = database.getCollection("tasks");
+    private final MongoClient client = new MongoClient();
+    private final MongoDatabase database = client.getDatabase("myFirstDb");
+    private final MongoCollection<Document> collection = database.getCollection("tasks");
 
     @Override
     public void insertTask(Task task){
