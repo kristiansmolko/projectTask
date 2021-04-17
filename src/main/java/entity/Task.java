@@ -1,6 +1,7 @@
 package entity;
 
 public class Task {
+    private String id;
     private String name;
     private double price;
     private int priority;
@@ -17,6 +18,11 @@ public class Task {
     public Task(String name, String date, int priority, boolean done, double price) {
         this(name, date, priority, done);
         this.price = price;
+    }
+
+    public Task(String id, String name, String date, int priority, boolean done) {
+        this(name, date, priority, done);
+        this.id = id;
     }
 
     public String getName() {
@@ -41,5 +47,9 @@ public class Task {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getId() {
+        return id;
     }
 }
