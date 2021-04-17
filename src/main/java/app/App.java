@@ -23,11 +23,11 @@ public class App extends Application {
     private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final String date = format.format(new Date());
     private final ListView<String> list = new ListView<>();
-    private final BorderPane root = new BorderPane();
     private final Alert alert = new Alert(Alert.AlertType.WARNING);
-    private Stage ourStage = new Stage();
-    private final Scene mainScene = new Scene(root, 500, 400);
     private final Button check = markDoneBtn();
+    private Stage ourStage = new Stage();
+    private final BorderPane root = rootPane();
+    private final Scene mainScene = new Scene(root, 500, 400);
 
     public static void main(String[] args) {
         launch(args);
@@ -36,54 +36,6 @@ public class App extends Application {
     @Override
     public void start(Stage stage) {
         ourStage = stage;
-        list.setMaxWidth(370);
-        list.setMaxHeight(300);
-        list.setEditable(false);
-        check.setVisible(false);
-
-        GridPane buttonPane = new GridPane();
-        buttonPane.setMaxWidth(100);
-        buttonPane.setTranslateX(-10);
-        buttonPane.setTranslateY(20);
-        buttonPane.setVgap(15);
-
-        Button allBtn = allMessages();
-        Button newBtn = new Button("New task");
-        newBtn.setMaxHeight(20); newBtn.setMaxWidth(100);
-        newBtn.setOnAction(e -> {
-            BorderPane root2 = newMessage();
-            Scene scene2 = new Scene(root2, 600, 400);
-            ourStage.setScene(scene2);
-            ourStage.setTitle("New task");
-            ourStage.show();
-        });
-
-        GridPane priority = new GridPane();
-        priority.setMaxWidth(100);
-        priority.setVgap(10);
-        ComboBox<Integer> choosePriority = priorityBox();
-        Button byBtn = byPriorityMessages(choosePriority);
-        priority.addRow(0, byBtn);
-        priority.addRow(1, choosePriority);
-
-        GridPane byName = new GridPane();
-        byName.setMaxWidth(100);
-        byName.setVgap(10);
-        TextField name = new TextField();
-        name.setMaxWidth(100);
-        Button btnByName = byNameMessage(name);
-        byName.addRow(0, btnByName);
-        byName.addRow(1, name);
-
-        buttonPane.addRow(0, allBtn);
-        buttonPane.addRow(1, newBtn);
-        buttonPane.addRow(2, priority);
-        buttonPane.addRow(3, byName);
-        buttonPane.addRow(4, check);
-
-        root.setCenter(list);
-        root.setRight(buttonPane);
-
         ourStage.setScene(mainScene);
         ourStage.setTitle("Task manager");
         ourStage.show();
@@ -231,5 +183,72 @@ public class App extends Application {
             }
         });
         return button;
+    }
+
+    private GridPane priorityPane(){
+        GridPane priority = new GridPane();
+        priority.setMaxWidth(100);
+        priority.setVgap(10);
+        ComboBox<Integer> choosePriority = priorityBox();
+        Button byBtn = byPriorityMessages(choosePriority);
+        priority.addRow(0, byBtn);
+        priority.addRow(1, choosePriority);
+        return priority;
+    }
+
+    private GridPane namePane(){
+        GridPane byName = new GridPane();
+        byName.setMaxWidth(100);
+        byName.setVgap(10);
+        TextField name = new TextField();
+        name.setMaxWidth(100);
+        Button btnByName = byNameMessage(name);
+        byName.addRow(0, btnByName);
+        byName.addRow(1, name);
+        return byName;
+    }
+
+    private GridPane buttons(){
+        GridPane buttonPane = new GridPane();
+        buttonPane.setMaxWidth(100);
+        buttonPane.setTranslateX(-10);
+        buttonPane.setTranslateY(20);
+        buttonPane.setVgap(15);
+
+        Button allBtn = allMessages();
+        Button newBtn = new Button("New task");
+        newBtn.setMaxHeight(20); newBtn.setMaxWidth(100);
+        newBtn.setOnAction(e -> {
+            BorderPane root2 = newMessage();
+            Scene scene2 = new Scene(root2, 600, 400);
+            ourStage.setScene(scene2);
+            ourStage.setTitle("New task");
+            ourStage.show();
+        });
+
+        GridPane priority = priorityPane();
+
+        GridPane byName = namePane();
+
+        buttonPane.addRow(0, allBtn);
+        buttonPane.addRow(1, newBtn);
+        buttonPane.addRow(2, priority);
+        buttonPane.addRow(3, byName);
+        buttonPane.addRow(4, check);
+
+        return buttonPane;
+    }
+
+    private BorderPane rootPane(){
+        BorderPane root = new BorderPane();
+        list.setMaxWidth(370);
+        list.setMaxHeight(300);
+        list.setEditable(false);
+
+        GridPane buttonPane = buttons();
+
+        root.setCenter(list);
+        root.setRight(buttonPane);
+        return root;
     }
 }
