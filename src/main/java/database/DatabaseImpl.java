@@ -1,12 +1,17 @@
 package database;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import entity.Task;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +35,8 @@ public class DatabaseImpl implements Database {
     }
 
     @Override
-    public void completeTask(int id){
-
+    public void completeTask(String id){
+        collection.updateOne(Filters.eq("_id", new ObjectId(id)), Updates.set("done", true));
     }
 
     @Override
@@ -44,14 +49,7 @@ public class DatabaseImpl implements Database {
         for (Document doc : collection.find()){
             try {
                 JSONObject object = (JSONObject) new JSONParser().parse(doc.toJson());
-                String name = (String) object.get("name");
-                String date = (String) object.get("date");
-                int priority = Integer.parseInt(String.valueOf(object.get("priority")));
-                boolean done = (boolean) object.get("done");
-                Task task = new Task(name, date, priority, done);
-                if (object.get("price") != null) {
-                    task.setPrice(Double.parseDouble(String.valueOf(object.get("price"))));
-                }
+                Task task = getTaskOutOfJSON(object);
                 list.add(task);
             } catch (Exception e) { e.printStackTrace(); }
         }
@@ -63,13 +61,7 @@ public class DatabaseImpl implements Database {
         for (Document doc : collection.find()){
             try {
                 JSONObject object = (JSONObject) new JSONParser().parse(doc.toJson());
-                String name = (String) object.get("name");
-                String date = (String) object.get("date");
-                int priority = Integer.parseInt(String.valueOf(object.get("priority")));
-                boolean done = (boolean) object.get("done");
-                Task task = new Task(name, date, priority, done);
-                if (object.get("price") != null)
-                    task.setPrice(Double.parseDouble(String.valueOf(object.get("price"))));
+                Task task = getTaskOutOfJSON(object);
                 if (object.get(criteria) == value ||
                         (value instanceof Number && Integer.parseInt(String.valueOf(object.get(criteria))) ==
                                 Integer.parseInt(String.valueOf(value))) ||
@@ -91,8 +83,17 @@ public class DatabaseImpl implements Database {
     }
 
     @Override
-    public List<Task> getTasksByName(String name){
-        return executeByCriteria("name", name);
+    public Task getTaskByName(String name){
+        Document doc = new Document();
+        doc.put("name", name);
+        FindIterable<Document> find = collection.find(doc);
+        for (Document d: find){
+            try {
+                JSONObject object = (JSONObject) new JSONParser().parse(d.toJson());
+                return getTaskOutOfJSON(object);
+            } catch (ParseException e) { e.printStackTrace(); }
+        }
+        return null;
     }
 
     @Override
@@ -100,4 +101,17 @@ public class DatabaseImpl implements Database {
 
     }
 
+    private Task getTaskOutOfJSON(JSONObject object){
+        JSONObject idJSON = (JSONObject) object.get("_id");
+        String id = (String) idJSON.get("$oid");
+        String name = (String) object.get("name");
+        String date = (String) object.get("date");
+        int priority = Integer.parseInt(String.valueOf(object.get("priority")));
+        boolean done = (boolean) object.get("done");
+        Task task = new Task(id, name, date, priority, done);
+        if (object.get("price") != null) {
+            task.setPrice(Double.parseDouble(String.valueOf(object.get("price"))));
+        }
+        return task;
+    }
 }
