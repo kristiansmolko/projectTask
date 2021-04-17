@@ -20,11 +20,14 @@ import java.util.List;
 
 public class App extends Application {
     DatabaseImpl dat = new DatabaseImpl();
-    private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private String date = format.format(new Date());
-    private ListView<String> list = new ListView<>();
-    private BorderPane root = new BorderPane();
-    private Alert alert = new Alert(Alert.AlertType.WARNING);
+    private final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private final String date = format.format(new Date());
+    private final ListView<String> list = new ListView<>();
+    private final BorderPane root = new BorderPane();
+    private final Alert alert = new Alert(Alert.AlertType.WARNING);
+    private Stage ourStage = new Stage();
+    private final Scene mainScene = new Scene(root, 500, 400);
+    private final Button check = markDoneBtn();
 
     public static void main(String[] args) {
         launch(args);
@@ -32,11 +35,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        list.setMaxWidth(300);
+        ourStage = stage;
+        list.setMaxWidth(370);
         list.setMaxHeight(300);
         list.setEditable(false);
+        check.setVisible(false);
 
         GridPane buttonPane = new GridPane();
+        buttonPane.setMaxWidth(100);
         buttonPane.setTranslateX(-10);
         buttonPane.setTranslateY(20);
         buttonPane.setVgap(15);
@@ -47,9 +53,9 @@ public class App extends Application {
         newBtn.setOnAction(e -> {
             BorderPane root2 = newMessage();
             Scene scene2 = new Scene(root2, 600, 400);
-            stage.setScene(scene2);
-            stage.setTitle("New task");
-            stage.showAndWait();
+            ourStage.setScene(scene2);
+            ourStage.setTitle("New task");
+            ourStage.show();
         });
 
         GridPane priority = new GridPane();
@@ -60,17 +66,27 @@ public class App extends Application {
         priority.addRow(0, byBtn);
         priority.addRow(1, choosePriority);
 
+        GridPane byName = new GridPane();
+        byName.setMaxWidth(100);
+        byName.setVgap(10);
+        TextField name = new TextField();
+        name.setMaxWidth(100);
+        Button btnByName = byNameMessage(name);
+        byName.addRow(0, btnByName);
+        byName.addRow(1, name);
+
         buttonPane.addRow(0, allBtn);
         buttonPane.addRow(1, newBtn);
         buttonPane.addRow(2, priority);
+        buttonPane.addRow(3, byName);
+        buttonPane.addRow(4, check);
 
         root.setCenter(list);
         root.setRight(buttonPane);
 
-        Scene scene = new Scene(root, 400, 400);
-        stage.setScene(scene);
-        stage.setTitle("Task manager");
-        stage.show();
+        ourStage.setScene(mainScene);
+        ourStage.setTitle("Task manager");
+        ourStage.show();
     }
 
     private Button allMessages(){
@@ -78,6 +94,7 @@ public class App extends Application {
         button.setMaxHeight(20); button.setMaxWidth(100);
         button.setOnAction(e2 -> {
             List<Task> listOfAll = dat.getAllTasks();
+            check.setVisible(true);
             addToList(listOfAll);
         });
         return button;
@@ -93,7 +110,9 @@ public class App extends Application {
 
     private Button newMessage(TextField nameField, ComboBox<Integer> box, CheckBox checkBox, TextField priceField){
         Button create = new Button("New task");
-        create.setMaxHeight(20); create.setMaxWidth(50);
+        create.setTranslateX(100);
+        create.setTranslateY(-50);
+        create.setMaxHeight(50); create.setMaxWidth(200);
         create.setOnAction(e2 -> {
             String taskName = nameField.getText().trim();
             int taskPriority = box.getValue();
@@ -106,6 +125,8 @@ public class App extends Application {
             } else
                 taskPrice = 0;
             dat.insertTask(newTask);
+            ourStage.setScene(mainScene);
+            ourStage.show();
         });
         return create;
     }
@@ -153,6 +174,7 @@ public class App extends Application {
                 alert.setContentText("Choose priority");
                 alert.showAndWait();
             } else {
+                check.setVisible(true);
                 int priorityValue = priority.getValue();
                 List<Task> listPriority = dat.getTasksByPriority(priorityValue);
                 addToList(listPriority);
@@ -169,5 +191,45 @@ public class App extends Application {
                     + (t.isDone()?"Done":"Not done") + "\n" +
                     "----------------------------------------------------\n");
         }
+    }
+
+    private Button markDoneBtn(){
+        Button check = new Button("Done");
+        check.setVisible(false);
+        check.setOnAction(e -> {
+            String[] temp;
+            ObservableList<String> selected = list.getSelectionModel().getSelectedItems();
+            for (String o: selected) {
+                temp = o.split(":");
+                String[] temp2 = temp[3].split(",");
+                String name = temp2[0].strip();
+                Task task = dat.getTaskByName(name);
+                if (!task.isDone())
+                    dat.completeTask(task.getId());
+            }
+        });
+        return check;
+    }
+
+    private Button byNameMessage(TextField field){
+        Button button = new Button("Name");
+        button.setMaxWidth(100);
+        button.setMaxHeight(20);
+        button.setOnAction(e -> {
+            if (field.getText().equals("") || field.getText() == null){
+                alert.setContentText("Enter valid name");
+                alert.showAndWait();
+            } else {
+                check.setVisible(true);
+                list.getItems().clear();
+                String name = field.getText();
+                Task t = dat.getTaskByName(name);
+                list.getItems().add(t.getDate() + ": \n" + t.getName() + ", Priority: " + t.getPriority() +
+                        (t.getPrice() > 0.0 ? (", Price: " + t.getPrice() + ": ") : ": ")
+                        + (t.isDone() ? "Done" : "Not done") + "\n" +
+                        "----------------------------------------------------\n");
+            }
+        });
+        return button;
     }
 }
