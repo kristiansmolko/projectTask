@@ -230,13 +230,33 @@ public class App extends Application {
 
         GridPane byName = namePane();
 
+        Button deleteDone = btnDelete();
+
         buttonPane.addRow(0, allBtn);
         buttonPane.addRow(1, newBtn);
         buttonPane.addRow(2, priority);
         buttonPane.addRow(3, byName);
         buttonPane.addRow(4, check);
+        buttonPane.addRow(5, deleteDone);
 
         return buttonPane;
+    }
+
+    private Button btnDelete() {
+        Button button = new Button("Delete done");
+        button.setMaxWidth(100);
+        button.setMaxHeight(20);
+        button.setOnAction(e -> {
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+            alert.setContentText("Are you sure you want to delete all done tasks?");
+            alert.showAndWait().ifPresent((buttonType -> {
+                if (buttonType == ButtonType.OK)
+                    dat.deleteDoneTasks();
+                else
+                    alert.close();
+            }));
+        });
+        return button;
     }
 
     private BorderPane rootPane(){
