@@ -98,7 +98,7 @@ public class DatabaseImpl implements Database {
 
     @Override
     public void deleteDoneTasks(){
-
+        collection.deleteMany(new Document().append("done", true));
     }
 
     private Task getTaskOutOfJSON(JSONObject object){
