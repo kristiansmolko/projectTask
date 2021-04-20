@@ -82,7 +82,24 @@ public class DatabaseImpl implements Database {
         return executeByCriteria("priority", priority);
     }
 
-    @Override
+    public List<Task> getTasksByName(String name){
+        List<Task> list = new ArrayList<>();
+        Document doc = new Document();
+        Document regex = new Document();
+        regex.put("$regex", name);
+        regex.put("$options", "\"$i\"");
+        doc.put("name", regex);
+        FindIterable<Document> find = collection.find(doc);
+        for (Document d: find){
+            try {
+                JSONObject object = (JSONObject) new JSONParser().parse(d.toJson());
+                Task task = getTaskOutOfJSON(object);
+                list.add(task);
+            } catch (ParseException e) { e.printStackTrace(); }
+        }
+        return list;
+    }
+
     public Task getTaskByName(String name){
         Document doc = new Document();
         doc.put("name", name);
