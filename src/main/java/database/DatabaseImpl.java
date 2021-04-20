@@ -100,6 +100,7 @@ public class DatabaseImpl implements Database {
         return list;
     }
 
+    @Override
     public Task getTaskByName(String name){
         Document doc = new Document();
         doc.put("name", name);
