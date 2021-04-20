@@ -175,11 +175,7 @@ public class App extends Application {
                 check.setVisible(true);
                 list.getItems().clear();
                 String name = field.getText();
-                Task t = dat.getTaskByName(name);
-                list.getItems().add(t.getDate() + ": \n" + t.getName() + ", Priority: " + t.getPriority() +
-                        (t.getPrice() > 0.0 ? (", Price: " + t.getPrice() + ": ") : ": ")
-                        + (t.isDone() ? "Done" : "Not done") + "\n" +
-                        "----------------------------------------------------\n");
+                addToList(dat.getTasksByName(name));
             }
         });
         return button;
