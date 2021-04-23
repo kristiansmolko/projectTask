@@ -107,8 +107,10 @@ app.get('/task', (req, res) => {
     }
 })
 
-app.post('/task', (req, res) => {
+app.post('/task/new', (req, res) => {
     if (!req.body.task && !req.body.done && !req.body.priority) throw new Error("Wrong values");
+    if ((typeof req.body.task != "string") || (typeof req.body.priority != "number")
+    || (typeof req.body.done != 'boolean')) throw new Error("Wrong values");
     let date = getDate();
     var name = req.body.task;
     var prior = parseInt(req.body.priority);
@@ -120,8 +122,8 @@ app.post('/task', (req, res) => {
         date: date,
         done: done,
     };
+    if (req.body.price && (typeof req.body.price != "number")) throw new Error("Wrong values");
     if (price > 0) doc.price = price;
-    console.log(date);
     insert(req, res, doc);
     res.send("Document inserted");
 })
