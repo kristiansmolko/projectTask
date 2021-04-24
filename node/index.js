@@ -93,17 +93,15 @@ app.get('/task', (req, res) => {
         {priority: prior}
         ]}
         connect(req, res, query);
-    } else {
+    } else if (req.query.find){
+        if (typeof req.query.find !== "string") throw new Error("Wrong value");
+        let query = {$regex: req.query.find};
+        query.$options = "$i";
+        query = {name: query};
+        console.log(query);
+        connect(req, res, query);
+    }else {
         connect(req, res, {});
-        // mongoClient.connect(url, function(err, db) {
-        //     if (err) throw err;
-        //     var dbo = db.db("myFirstDb");
-        //     dbo.collection("tasks").find().toArray(function(err, result) {
-        //         if (err) throw err;
-        //         res.send(result);
-        //         db.close();
-        //     })
-        // })
     }
 })
 
