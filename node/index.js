@@ -138,13 +138,12 @@ app.post('/task/new', (req, res) => {
 })
 
 app.put('/task/done', (req, res) => {
+    if (!req.query._id) res.status(400).send("Wrong value");
     var query = {_id: new mongodb.ObjectID(req.query._id)};
     var set = {done: true};
     set = {$set: set}
-    console.log(query);
-    console.log(set);
     update(req, res, query, set);
-    res.send("Document updated");
+    res.status(200).send("Document updated");
 })
 
 app.listen(3000, () => {
