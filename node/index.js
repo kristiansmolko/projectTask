@@ -40,6 +40,18 @@ function insert(req, res, doc) {
     })
 }
 
+function update(req, res, query, set){
+    mongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("myFirstDb");
+        dbo.collection("tasks").updateOne(query, set, (err, result) => {
+            if (err) throw err;
+            console.log("Document updated");
+            db.close();
+        })
+    })
+}
+
 function getDate() {
     var today = new Date();
     let year = today.getFullYear();
@@ -98,7 +110,6 @@ app.get('/task', (req, res) => {
         let query = {$regex: req.query.find};
         query.$options = "$i";
         query = {name: query};
-        console.log(query);
         connect(req, res, query);
     }else {
         connect(req, res, {});
@@ -124,6 +135,16 @@ app.post('/task/new', (req, res) => {
     if (price > 0) doc.price = price;
     insert(req, res, doc);
     res.send("Document inserted");
+})
+
+app.put('/task/done', (req, res) => {
+    var query = {_id: new mongodb.ObjectID(req.query._id)};
+    var set = {done: true};
+    set = {$set: set}
+    console.log(query);
+    console.log(set);
+    update(req, res, query, set);
+    res.send("Document updated");
 })
 
 app.listen(3000, () => {
