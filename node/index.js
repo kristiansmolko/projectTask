@@ -22,7 +22,7 @@ function connect(req, res, query) {
         var dbo = db.db("myFirstDb");
         dbo.collection("tasks").find(query).toArray(function(err, result) {
             if (err) throw err;
-            res.send(result);
+            res.status(200).send(result);
         })
         db.close();
     })
@@ -81,45 +81,41 @@ app.get('/task', (req, res) => {
     if (req.query.priority && !req.query.done){
         var prior = req.query.priority;
         var query = {priority: parseInt(prior, 10)};
-        if (prior < 0 || prior > 3){
-            throw new Error("Wrong value");
-        }
-        connect(req, res, query);
+        if (prior < 0 || prior > 3) res.status(404).send("Wrong value");
+        else connect(req, res, query);
     } else if (req.query.done && !req.query.priority){
         var bool = req.query.done;
-        let query;
-        if (bool === "true" || bool === "True"){
-            query = {done: true};
-        } else if (bool === "false" || bool === "False"){
-            query = {done: false};
-        } else {
-            throw new Error("Wrong value");
-        }
-        connect(req, res, query);
+        let query = 'undefined';
+        if (bool === "true" || bool === "True") query = {done: true};
+        else if (bool === "false" || bool === "False") query = {done: false};
+        if (query === 'undefined') res.status(404).send("Wrong value");
+        else connect(req, res, query);
     } else if (req.query.done && req.query.priority){
         var prior = parseInt(req.query.priority)
         if (req.query.done !== "true" && req.query.done !== "false" || prior > 3 ||
-        prior < 0) throw new Error("Wrong value");
-        var query = {$and : [
-        {done: req.query.done=="true"?true:false},
-        {priority: prior}
-        ]}
-        connect(req, res, query);
+        prior < 0) res.status(404).send("Wrong value");
+        else {
+            var query = {$and : [
+            {done: req.query.done=="true"?true:false},
+            {priority: prior}
+            ]}
+            connect(req, res, query);
+        }
     } else if (req.query.find){
-        if (typeof req.query.find !== "string") throw new Error("Wrong value");
-        let query = {$regex: req.query.find};
-        query.$options = "$i";
-        query = {name: query};
-        connect(req, res, query);
-    }else {
-        connect(req, res, {});
-    }
+        if (typeof req.query.find !== "string") res.status(404).send("Wrong value");
+        else {
+            let query = {$regex: req.query.find};
+            query.$options = "$i";
+            query = {name: query};
+            connect(req, res, query);
+        }
+    }else connect(req, res, {});
 })
 
 app.post('/task/new', (req, res) => {
-    if (!req.body.task && !req.body.done && !req.body.priority) throw new Error("Wrong values");
+    if (!req.body.task && !req.body.done && !req.body.priority) res.status(404).send("Wrong values");
     if ((typeof req.body.task != "string") || (typeof req.body.priority != "number")
-    || (typeof req.body.done != 'boolean')) throw new Error("Wrong values");
+    || (typeof req.body.done != 'boolean')) res.status(404).send("Wrong values");
     let date = getDate();
     var name = req.body.task;
     var prior = parseInt(req.body.priority);
@@ -131,10 +127,10 @@ app.post('/task/new', (req, res) => {
         date: date,
         done: done,
     };
-    if (req.body.price && (typeof req.body.price != "number")) throw new Error("Wrong values");
+    if (req.body.price && (typeof req.body.price != "number")) res.status(404).send("Wrong values");
     if (price > 0) doc.price = price;
     insert(req, res, doc);
-    res.send("Document inserted");
+    res.status(201).send("Document inserted");
 })
 
 app.put('/task/done', (req, res) => {
