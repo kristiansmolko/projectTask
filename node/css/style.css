@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
+.form {
+    width: 15%;
+    padding: 1em;
+    margin: 1em;
+}
+
+.name_div {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1em;
+    margin: 0 1em;
+}
+
+.priority_div {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    margin: 0 1em;
+}
+
+.price_div {
+    display: flex;
+    flex-direction: column;
+    padding: 0 1em;
+    margin: 0 1em;
+}
+
+.button {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    margin: 0 1em;
+}
