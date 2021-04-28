@@ -6,7 +6,9 @@
 }
 
 .form {
-    width: 15%;
+    background-color: rgba(161, 159, 159, 0.911);
+    border-radius: 4px;
+    width: 200px;
     padding: 1em;
     margin: 1em;
 }
