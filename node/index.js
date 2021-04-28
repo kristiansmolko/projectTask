@@ -14,6 +14,12 @@ app.use(
     })
 );
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+    next();
+  });
+
 app.use(express.json());
 
 function connect(req, res, query) {
@@ -117,7 +123,7 @@ app.post('/task/new', (req, res) => {
     if ((typeof req.body.task != "string") || (typeof req.body.priority != "number")
     || (typeof req.body.done != 'boolean')) res.status(404).send("Wrong values");
     let date = getDate();
-    var name = req.body.task;
+    var name = req.body.name;
     var prior = parseInt(req.body.priority);
     var done = req.body.done=="true"?true:false;
     var price = parseFloat(req.body.price);
@@ -127,10 +133,11 @@ app.post('/task/new', (req, res) => {
         date: date,
         done: done,
     };
-    if (req.body.price && (typeof req.body.price != "number")) res.status(404).send("Wrong values");
+    if (req.body.price && (typeof price != "number")) res.status(404).send("Wrong values");
     if (price > 0) doc.price = price;
+    console.log(doc);
     insert(req, res, doc);
-    res.status(201).send("Document inserted");
+    //res.status(201).send("Document inserted");
 })
 
 app.put('/task/done', (req, res) => {
