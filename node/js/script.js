@@ -10,4 +10,16 @@ btn.addEventListener("click", () => {
     }
     if (price > 0) json.price = price;
     console.log(json);
+    $.ajax({
+        url: "http://localhost:3000/task/new",
+        type: "post",
+        dataType: "application/json",
+        data: json,
+        success: (result) => {
+            console.log(result);
+        },
+        error: (error) => {
+            console.log(error);
+        }
+    })
 });
