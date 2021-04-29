@@ -40,3 +40,11 @@
     padding: 1em;
     margin: 0 1em;
 }
+
+.task_text {
+    display: flex;
+    width: 250px;
+    flex-direction: column;
+    padding: 0.5em;
+    border: 5px solid black;
+}
