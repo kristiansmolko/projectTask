@@ -18,11 +18,11 @@ $(() => {
                     const date = result[index].date;
                     const done = result[index].done;
                     const price = result[index].price;
-                    var text = name + " (" + date + ") <br>";
+                    var text = "<label>" + name + " (" + date + ") " + "<br>";
                     text = text + "Priority: " + priority + "<br>";
                     if (result[index].price) text = text + "Price: " + price + "<br>";
                     text = text + "Done: " + done + "<br>";
-                    text = text + "---------------------------------<br>";
+                    text = text + "---------------------------------<br> </label>";
                     $("#parent").append(text);
                 }
             },
