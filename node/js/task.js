@@ -22,6 +22,7 @@ $(() => {
                     text = text + "Priority: " + priority + "<br>";
                     if (result[index].price) text = text + "Price: " + price + "<br>";
                     text = text + "Done: " + done + "<br>";
+                    if (!done) text = text + "<button id=" + id + " onClick=\"complete(this.id)\"> Complete";
                     text = text + "</label>";
                     $("#parent").append(text);
                 }
@@ -35,4 +36,20 @@ $(() => {
         },
         
     })
-})
+});
+
+function complete(id){
+    id = {"_id": id};
+    $.ajax({
+        url: "http://localhost:3000/task/done",
+        type: "put",
+        data: id,
+        success: (result) => {
+        },
+        error: (err) => {
+            console.log("Error: " + err);
+        }
+    });
+    
+    location.reload();
+}
