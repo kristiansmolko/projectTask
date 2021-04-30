@@ -137,16 +137,16 @@ app.post('/task/new', (req, res) => {
     if (price > 0) doc.price = price;
     console.log(doc);
     insert(req, res, doc);
-    //res.status(201).send("Document inserted");
+    res.status(201).send("Document inserted");
 })
 
 app.put('/task/done', (req, res) => {
-    if (!req.query._id) res.status(400).send("Wrong value");
-    var query = {_id: new mongodb.ObjectID(req.query._id)};
+    if (!req.body._id) res.status(400).send("Wrong value");
+    console.log(req.body._id);
+    var query = {_id: new mongodb.ObjectID(req.body._id)};
     var set = {done: true};
     set = {$set: set}
     update(req, res, query, set);
-    res.status(200).send("Document updated");
 })
 
 app.listen(3000, () => {
