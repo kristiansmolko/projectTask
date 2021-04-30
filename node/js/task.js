@@ -44,12 +44,8 @@ function complete(id){
         url: "http://localhost:3000/task/done",
         type: "put",
         data: id,
-        success: (result) => {
-        },
-        error: (err) => {
-            console.log("Error: " + err);
+        statusCode: {
+            200: location.reload()
         }
     });
-    
-    location.reload();
 }
