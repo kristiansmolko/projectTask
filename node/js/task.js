@@ -18,7 +18,8 @@ $(() => {
                     const date = result[index].date;
                     const done = result[index].done;
                     const price = result[index].price;
-                    var text = "<label class=\"task_text\"> <b>" + name + "</b> <u>(" + date + ")</u> ";
+                    var text = done?"<label class=\"task_text_done\"> ":"<label class=\"task_text\"> ";
+                    text = text + "<b>" + name + "</b> <u>(" + date + ")</u> ";
                     text = text + "Priority: " + priority + "<br>";
                     if (result[index].price) text = text + "Price: " + price + "<br>";
                     text = text + "Done: " + done + "<br>";
