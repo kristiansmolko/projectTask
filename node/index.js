@@ -137,7 +137,6 @@ app.post('/task/new', (req, res) => {
     if (price > 0) doc.price = price;
     console.log(doc);
     insert(req, res, doc);
-    res.status(201).send("Document inserted");
 })
 
 app.put('/task/done', (req, res) => {
